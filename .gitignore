@@ -1,1 +1,8 @@
+__pycache__/
+*.py[cod]
 .venv
+/test-reports
+.tox
+.vscode
+*.pyc
+.tox

@@ -1,7 +1,18 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+"""Centralize app instance"""
+from fastapi import FastAPI
+from app.config import SETTINGS
+from app.v1.routes import queue, health
+
 
 def create_app():
-    app = FastAPI()
-
+    """
+    Create a app instance
+    """
+    app = FastAPI(
+        title=SETTINGS.app_title,
+        description=SETTINGS.app_description,
+        version=SETTINGS.app_version,
+    )
+    app.include_router(queue.router)
+    app.include_router(health.router)
     return app

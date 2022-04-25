@@ -1,46 +1,53 @@
 ## Teste de Backend PSAFE
-
-### Modifique o servico em FastApi adicionando as seguintes 3 rotas:
-
-#### /add_task
-
-Cria uma tarefa assíncrona e retorna um id único desta tarefa.
-
-Essa tarefa assíncrona contém apenas um sleep de 10 segundos
-
-#### /count
-
-Retorna o total de tarefas em andamento
-
-#### /query
-
-Recebe um id de tarefa via GET ou POST, e retorna o status da tarefa:
-
-* não encontrado
-* rodando
-* concluído
-
-
-### Observacoes
-* Voce pode usar qualquer metodo para organizar as tarefas, sera levado em conta
-o por que de voce ter escolhido o metodo.
-* Para rodar o Servico voce precisara executar o arquivo run.py, o servidor esta subindo porem
-com alguns erros
-
-
-### Adicionais
-Existem muitas melhorias neste projeto, para verificar senioridade e diferencial, alem das rotas base
-sugerimos alguns adicionais para este projeto
-
-* validacao de dados de entrada
-* explicacao de qual backend usou para as tarefas como um comparativo entre outros
-* resolucao de erros de codigo
-* rotas RESTFULL
-* documentacao do codigo via fastapi
-* configuracao dinamica das variaveis de configuracao do servidor
-* criacao de um dockerfile do servidor e respectivos backends caso tenha
-* adicionar autenticacao APENAS nas rotas de tarefas(usando x-apikey, pode deixar apikey hardcoded)
-* criar um handling de erro customizado para voltar no request o erro(explicacao traceback)
-* criar uma rota de health
-* criacao de testes unitarios
-* lint
+ 
+### Como executar o projeto
+ 
+Crie um ambiente virtual python, preferencialmente na versão 3.8.10
+ 
+Instale as dependencias necessarias com:
+ 
+```pip install -r requirements.txt```
+ 
+```python run.py```
+ 
+### Como executar o projeto em um container docker
+ 
+Necessário que tenha o docker devidamente instalado e configurado. Dois comandos são necessários, primeiro
+para buildar a imagem docker e em seguida para subir um container com essa imagem.
+ 
+```sudo docker build -t tasks .```
+ 
+```docker run -d --name tasks_container -p 8081:8081 tasks```
+ 
+Estará rodando em localhost:8081/
+ 
+### Testes unitários e Lint
+ 
+Para executar os testes e o lint é necessário instalar tox e pylint.
+```pip install tox```
+ 
+```pip install pylint```
+ 
+Os testes unitários foram implementados para as 3 novas rotas estão organizados em tests/conftest.py e tasks_test.py.
+Para rodar somente os testes unitários use:
+ 
+```tox -e unit```
+ 
+Para executar somente a verificação com lint, use:
+```tox -e lint```
+ 
+Para executar os dois, use:
+```tox```
+ 
+ 
+### Documentação das rotas
+ 
+Com server rodando acesse pelo navegador localhost:8081/docs
+ 
+### Observações
+- As rotas das Tasks são protegidas por x-apikey, é necessário passar a key nesse campo.
+A key padrão é ```a7f9fa60-992d-4fb9-9f53-e8b1981ad418```. Mas você pode definir outra key, setando
+a variável de ambiente harded_apikey.
+ 
+- Todo o desenvolvimento do teste foi utilizado em memória, ou seja, ao reiniciar a aplicação todos os estados de Tasks serão perdidos.
+ 
