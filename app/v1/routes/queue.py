@@ -1,4 +1,3 @@
-
 """
     Implement routes to queue. Add new tasks and check status
 """
@@ -10,16 +9,21 @@ from app.v1.exception_handlers import InternalErrorException
 from app.v1.helper import is_working, log_error, simple_task
 from app.v1 import schema
 from app.v1.auth import validate_token
-from app.config import SETTINGS
 
 
-TASKS_ID_COUNT = {"id":0}
+TASKS_ID_COUNT = {"id": 0}
 TASKS_MAP = {}
 
 router = APIRouter(
     prefix="/queue",
     tags=["queue"],
-    responses={status_code.HTTP_404_NOT_FOUND: {"detail": "Not found"}},
+    responses={
+        status_code.HTTP_404_NOT_FOUND: {"detail": "Not found"},
+        status_code.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": schema.InternalErrorModel,
+            "description": "Internal server error",
+        },
+    },
 )
 
 
@@ -36,14 +40,14 @@ async def add_client_apk_classification(request: Request):
             "model": schema.IdModel,
             "description": "Task was created successfully.",
         },
-        status_code.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": schema.InternalErrorModel,
-            "description": "Internal server error",
+        status_code.HTTP_401_UNAUTHORIZED: {
+            "model": schema.AuthExecptionModel,
+            "description": "x-apikey is invalid",
         },
     },
 )
 async def create_task(response: JSONResponse, token: str = Depends(validate_token)):
-    """ Create a new Taks and save id : Task object in TASKS_MAP """
+    """Create a new Task and return your id"""
     try:
         response.status_code = status_code.HTTP_201_CREATED
         TASKS_ID_COUNT["id"] += 1
@@ -66,15 +70,13 @@ async def create_task(response: JSONResponse, token: str = Depends(validate_toke
             "model": schema.TaksCountModel,
             "description": "Success, 'total_running' contains the tasks number in Running state.",
         },
-        status_code.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": schema.InternalErrorModel,
-            "description": "Internal server error",
+        status_code.HTTP_401_UNAUTHORIZED: {
+            "model": schema.AuthExecptionModel,
+            "description": "x-apikey is invalid",
         },
     },
 )
-async def count_running_tasks(
-    token: str = Depends(validate_token)
-):
+async def count_running_tasks(token: str = Depends(validate_token)):
     """
     Count number of tasks in Running
     canceled status can be useful in other scenarios
@@ -98,16 +100,14 @@ async def count_running_tasks(
             "model": schema.TaskModel,
             "description": "Success, 'count' contains the tasks number in state.",
         },
-        status_code.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": schema.InternalErrorModel,
-            "description": "Internal server error",
+        status_code.HTTP_401_UNAUTHORIZED: {
+            "model": schema.AuthExecptionModel,
+            "description": "x-apikey is invalid",
         },
     },
 )
-async def get_task_status(
-    id: int, token: str = Depends(validate_token)
-):
-    """ return status by task id """
+async def get_task_status(id: int, token: str = Depends(validate_token)):
+    """return status by task id"""
     try:
         if id in TASKS_MAP:
             status = "Finished" if TASKS_MAP[id].done() else "Running"

@@ -1,7 +1,7 @@
 """Centralize app instance"""
 from fastapi import FastAPI
 from app.config import SETTINGS
-from app.v1.routes import queue
+from app.v1.routes import queue, health
 
 
 def create_app():
@@ -14,4 +14,5 @@ def create_app():
         version=SETTINGS.app_version,
     )
     app.include_router(queue.router)
+    app.include_router(health.router)
     return app

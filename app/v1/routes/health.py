@@ -11,12 +11,12 @@ router = APIRouter(
     responses={status_code.HTTP_404_NOT_FOUND: {"detail": "Not found"}},
 )
 
-@router.get("/", 
+
+@router.get(
+    "/",
     responses={
         status_code.HTTP_200_OK: {
-            "model": {
-                "status": str
-            },
+            "model": schema.HealthStatusModel,
             "description": "Success in recovering health status.",
         },
         status_code.HTTP_500_INTERNAL_SERVER_ERROR: {

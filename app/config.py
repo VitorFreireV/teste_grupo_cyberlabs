@@ -6,9 +6,9 @@ from pydantic import BaseSettings, ValidationError
 import dotenv
 
 
-
 class Settings(BaseSettings):
     """Base settings from application"""
+
     app: dict = {}
     fastapi: dict = {}
     tasks_map: dict = {}
@@ -20,6 +20,7 @@ class Settings(BaseSettings):
 
     class Config:
         """Path to environment variables file"""
+
         env_file = ".env"
 
 
